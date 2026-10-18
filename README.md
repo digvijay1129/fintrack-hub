@@ -2,35 +2,77 @@
 
 FinTrack Hub is a full-stack personal finance management and team expense-sharing SaaS built with React, Vite, Tailwind CSS, Node.js, Express, and MongoDB/Mongoose.
 
-> Project status: Phase 1 foundation is being implemented. See the roadmap and setup instructions as the application grows; features are only marked complete after they are implemented and tested.
+> **Status: Phase 1 foundation in progress.** This branch establishes the monorepo, frontend shell, API conventions, database connection configuration, CI checks, and starter tests. Authentication and finance features are not yet implemented.
 
-## Planned workspace
+## Architecture
 
-- `client/` — React + Vite frontend
-- `server/` — Express REST API
-- `docs/` — architecture and API notes
+- **Frontend:** React + Vite, React Router, Axios, Tailwind CSS, Recharts, React Icons.
+- **Backend:** Node.js, Express REST API, Zod environment validation, Helmet, CORS, request logging, and API rate limiting.
+- **Database:** MongoDB through Mongoose.
+- **Workspace layout:** `client/`, `server/`, and `docs/`.
 
-## Requirements
+Read [the architecture notes](docs/architecture.md), [local development guide](docs/development.md), and [REST API conventions](docs/api.md).
 
-- Node.js 22 LTS (Node 20.19+ also supported by the selected Vite toolchain)
+## Prerequisites
+
+- Node.js 22 LTS recommended (Node 20.19+ supported)
 - npm 10+
-- MongoDB locally or a MongoDB Atlas database for API persistence
+- MongoDB Community Server locally or a MongoDB Atlas database
 
-## Getting started
+## Get started
 
-1. Copy `server/.env.example` to `server/.env` and set `MONGODB_URI` and `JWT_ACCESS_SECRET`.
-2. Copy `client/.env.example` to `client/.env` if you need a non-default API URL.
-3. Install dependencies from the repository root with `npm install`.
-4. Run `npm run dev` to start both client and server.
-5. Visit the Vite URL printed in the terminal. The API health endpoint is available at `http://localhost:5000/api/health` by default.
+macOS/Linux:
 
-See `docs/architecture.md` for the Phase 1 architecture and `docs/development.md` for local setup, scripts, and troubleshooting.
+```bash
+cp server/.env.example server/.env
+cp client/.env.example client/.env
+npm install
+npm run dev
+```
 
-## Security notes
+PowerShell:
 
-- Never commit `.env` files or real credentials.
-- Newly registered accounts will default to the `User` application role. Admin assignment must be performed through a controlled server-side process in the authentication phase.
-- A visible frontend route is not an authorization boundary; protected resources must be checked by the API.
+```powershell
+Copy-Item server/.env.example server/.env
+Copy-Item client/.env.example client/.env
+npm install
+npm run dev
+```
+
+Review `server/.env` and replace the development JWT secret with a unique random value. Configure `MONGODB_URI` for your database. The web app runs at `http://localhost:5173` and the API listens on `http://localhost:5000` by default.
+
+## Health endpoints
+
+| Method | Endpoint | Meaning |
+| --- | --- | --- |
+| GET | `/` | API identity |
+| GET | `/api/health` | API liveness and database connection state |
+| GET | `/api/health/ready` | Readiness; responds with HTTP 503 if MongoDB is not connected |
+
+The development API can remain live while the database is disconnected, but database-backed features are not ready until the connection is established.
+
+## Quality checks
+
+```bash
+npm test
+npm run lint
+npm run build
+```
+
+A GitHub Actions workflow runs lint, tests, and the frontend production build for repository changes.
+
+## Security commitments
+
+- Never commit `.env` files, tokens, credentials, or private financial data.
+- New account registration must assign the application-wide `User` role on the server. Users must never self-assign `Admin`.
+- The application has exactly two global roles: `User` and `Admin`. Team ownership/membership will be handled as team-level permissions, not extra global roles.
+- Authorization belongs in the API, not only in frontend route visibility.
+- Private financial records and receipt documents must be scoped to an authenticated owner or explicitly authorized team member.
+- Admin access to private financial data must be narrowly authorized and auditable.
+
+## Roadmap
+
+Development will proceed phase by phase, in dependency order. Financial values will be based on authorized persisted records—not hardcoded dashboard demo numbers—and a feature will only be described as complete after implementation and tests provide evidence.
 
 ## License
 
