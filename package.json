@@ -1,0 +1,23 @@
+{
+  "name": "fintrack-hub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Full-stack personal finance and team expense-sharing SaaS",
+  "workspaces": ["client", "server"],
+  "engines": { "node": ">=20.19.0", "npm": ">=10.0.0" },
+  "scripts": {
+    "dev": "concurrently -k -n API,WEB -c blue,green \"npm:dev --workspace=server\" \"npm:dev --workspace=client\"",
+    "build": "npm run build --workspace=client",
+    "start": "npm run start --workspace=server",
+    "lint": "eslint .",
+    "test": "npm run test --workspace=server && npm run test --workspace=client"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.0",
+    "concurrently": "^9.2.0",
+    "eslint": "^9.30.0",
+    "globals": "^16.3.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20"
+  }
+}
