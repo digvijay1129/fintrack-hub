@@ -1,57 +1,91 @@
-# FinTrack Hub
+# FinTrack Hub — Phase 1 Foundation
 
-FinTrack Hub is a full-stack personal finance management and team expense-sharing SaaS built with React, Vite, Tailwind CSS, Node.js, Express, and MongoDB/Mongoose.
-
-> **Status: Phase 1 foundation in progress.** This branch establishes the monorepo, frontend shell, API conventions, database connection configuration, CI checks, and starter tests. Authentication and finance features are not yet implemented.
+This branch adds the verified starting point for the FinTrack Hub monorepo. The project is a work in progress; do not treat the roadmap page as proof that future finance features are implemented.
 
 ## Architecture
 
-- **Frontend:** React + Vite, React Router, Axios, Tailwind CSS, Recharts, React Icons.
-- **Backend:** Node.js, Express REST API, Zod environment validation, Helmet, CORS, request logging, and API rate limiting.
-- **Database:** MongoDB through Mongoose.
-- **Workspace layout:** `client/`, `server/`, and `docs/`.
+```text
+React 19 + Vite + React Router + Tailwind
+            | Axios requests to /api
+            v
+       Vite dev proxy (:5173)
+            |
+            v
+Express REST API (:5000)
+ Helmet | CORS | request logging | rate limiting
+            |
+       health/readiness routes
+            |
+            v
+       MongoDB Atlas/Local via Mongoose
+```
 
-Read [the architecture notes](docs/architecture.md), [local development guide](docs/development.md), and [REST API conventions](docs/api.md).
+- `client/`: React application, route shell, API client, and responsive styles.
+- `server/`: Express application, validated environment configuration, MongoDB connection, middleware, and REST routes.
+- `docs/`: architecture, API conventions, and local development guide.
+- `.github/workflows/ci.yml`: lint, test, and production-build checks.
 
 ## Prerequisites
 
-- Node.js 22 LTS recommended (Node 20.19+ supported)
+- Node.js 22 LTS recommended (Node.js 20.19+ supported by this toolchain)
 - npm 10+
-- MongoDB Community Server locally or a MongoDB Atlas database
+- Git
+- MongoDB Community Server or a MongoDB Atlas database
 
-## Get started
+Verify your versions:
+
+```bash
+node --version
+npm --version
+git --version
+```
+
+## Local setup
+
+Clone the repository and enter the root directory:
+
+```bash
+git clone https://github.com/digvijay1129/fintrack-hub.git
+cd fintrack-hub
+```
+
+Create local environment files (PowerShell shown afterwards):
 
 macOS/Linux:
-
 ```bash
 cp server/.env.example server/.env
 cp client/.env.example client/.env
-npm install
-npm run dev
 ```
 
-PowerShell:
-
+Windows PowerShell:
 ```powershell
 Copy-Item server/.env.example server/.env
 Copy-Item client/.env.example client/.env
+```
+
+Edit `server/.env`:
+- Set `MONGODB_URI` to your local database or Atlas connection string.
+- Replace `JWT_ACCESS_SECRET` with a unique, random value of at least 32 characters. This is a development placeholder today; production must never use the default.
+- Keep credentials in local `.env` files. Never commit them.
+
+Install workspaces and start the frontend and API from the repository root:
+
+```bash
 npm install
 npm run dev
 ```
 
-Review `server/.env` and replace the development JWT secret with a unique random value. Configure `MONGODB_URI` for your database. The web app runs at `http://localhost:5173` and the API listens on `http://localhost:5000` by default.
+Open:
+- Frontend: http://localhost:5173
+- API identity: http://localhost:5000/
+- Liveness: http://localhost:5000/api/health
+- Readiness: http://localhost:5000/api/health/ready
 
-## Health endpoints
-
-| Method | Endpoint | Meaning |
-| --- | --- | --- |
-| GET | `/` | API identity |
-| GET | `/api/health` | API liveness and database connection state |
-| GET | `/api/health/ready` | Readiness; responds with HTTP 503 if MongoDB is not connected |
-
-The development API can remain live while the database is disconnected, but database-backed features are not ready until the connection is established.
+Liveness can respond while MongoDB is disconnected in development. Readiness returns HTTP 503 until the database is connected.
 
 ## Quality checks
+
+Run from the repository root:
 
 ```bash
 npm test
@@ -59,21 +93,28 @@ npm run lint
 npm run build
 ```
 
-A GitHub Actions workflow runs lint, tests, and the frontend production build for repository changes.
+The repository CI workflow runs these checks for pushes and pull requests. Run them locally before considering a change complete.
 
-## Security commitments
+## Current scope
 
-- Never commit `.env` files, tokens, credentials, or private financial data.
-- New account registration must assign the application-wide `User` role on the server. Users must never self-assign `Admin`.
-- The application has exactly two global roles: `User` and `Admin`. Team ownership/membership will be handled as team-level permissions, not extra global roles.
-- Authorization belongs in the API, not only in frontend route visibility.
-- Private financial records and receipt documents must be scoped to an authenticated owner or explicitly authorized team member.
-- Admin access to private financial data must be narrowly authorized and auditable.
+Implemented in this foundation: workspace separation, responsive React shell, React Router, Axios API base client, Express middleware baseline, environment validation, MongoDB connection handling, health/readiness endpoints, consistent API error shape, setup/architecture documentation, and CI checks.
 
-## Roadmap
+Not implemented yet: registration/login, authorization middleware, personal transactions, budgets, financial dashboards backed by user records, team sharing, settlements, uploads/OCR, notifications, exports, and deployment. Those are subsequent roadmap phases.
 
-Development will proceed phase by phase, in dependency order. Financial values will be based on authorized persisted records—not hardcoded dashboard demo numbers—and a feature will only be described as complete after implementation and tests provide evidence.
+## Financial and privacy constraints
 
-## License
+- There are exactly two application-wide roles planned: `User` and `Admin`.
+- Registration will assign `User` on the server; a client-submitted role must never grant admin privileges.
+- Team owner/member permissions are team-level and do not create more global roles.
+- Private financial queries must always scope to an authenticated owner or authorized team membership.
+- Administrative access to private financial data must be narrow, justified, and audited.
+- Financial metrics must be derived from persisted, authorized records—not fake dashboard balances.
+- Never add secrets, tokens, personal financial records, or local `.env` files to version control.
 
-No license has been selected yet. Until one is added, all rights remain with the repository owner.
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Local development guide](docs/development.md)
+- [API conventions](docs/api.md)
+
+There is no license selected yet. Until a license is added, all rights remain with the repository owner.
