@@ -1,31 +1,36 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-
-vi.mock("./api/health.js", () => ({
-  getApiHealth: vi.fn().mockResolvedValue({
-    status: "ok",
-    service: "fintrack-hub-api",
-    timestamp: "2026-01-01T00:00:00.000Z",
-    database: "connected"
-  })
-}));
-
+import { AuthProvider } from "./context/AuthContext.jsx";
+import { getCurrentUser } from "./api/auth.js";
 import App from "./App.jsx";
 
+vi.mock("./api/auth.js", () => ({
+  getCurrentUser: vi.fn(), loginAccount: vi.fn(), registerAccount: vi.fn(),
+  logoutAccount: vi.fn(), updateCurrentUser: vi.fn(), changeAccountPassword: vi.fn()
+}));
+vi.mock("./api/dashboard.js", () => ({ getDashboardSummary: vi.fn() }));
+vi.mock("./api/expenses.js", () => ({
+  listExpenses: vi.fn(), createExpense: vi.fn(), updateExpense: vi.fn(), deleteExpense: vi.fn()
+}));
+vi.mock("./api/budgets.js", () => ({
+  listBudgets: vi.fn(), createBudget: vi.fn(), updateBudget: vi.fn(), deleteBudget: vi.fn()
+}));
 afterEach(() => cleanup());
-
-describe("application foundation", () => {
-  it("renders the app shell and makes project scope clear", () => {
-    render(<MemoryRouter><App /></MemoryRouter>);
-    expect(screen.getByText(/Make money decisions/)).toBeInTheDocument();
-    expect(screen.getByRole("navigation", { name: "Main navigation" })).toBeInTheDocument();
-    expect(screen.getByText(/No sample balances or transactions are shown/)).toBeInTheDocument();
+beforeEach(() => { getCurrentUser.mockRejectedValue(new Error("Unauthenticated")); });
+function renderApp(path = "/dashboard") {
+  return render(<MemoryRouter initialEntries={[path]}><AuthProvider><App /></AuthProvider></MemoryRouter>);
+}
+describe("FinTrack Hub routes", () => {
+  it("redirects unauthenticated users to sign in", async () => {
+    renderApp();
+    expect(await screen.findByRole("heading", { name: "Welcome back" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Email address")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
   });
-
-  it("shows later-phase pages as planned rather than pretending they are complete", () => {
-    render(<MemoryRouter initialEntries={["/budgets"]}><App /></MemoryRouter>);
-    expect(screen.getByRole("heading", { name: "Budgets" })).toBeInTheDocument();
-    expect(screen.getByText(/Phase 4/)).toBeInTheDocument();
+  it("shows the public registration form", async () => {
+    renderApp("/register");
+    expect(await screen.findByRole("heading", { name: "Create your account" })).toBeInTheDocument();
+    expect(screen.getByText(/at least 12 characters/i)).toBeInTheDocument();
   });
 });
