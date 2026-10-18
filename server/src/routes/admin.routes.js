@@ -1,0 +1,10 @@
+import { Router } from "express";
+import { authenticate, requireAdmin } from "../middleware/authenticate.js";
+import { getAdminOverview, listAuditLogs, listUsers, updateUserStatus } from "../controllers/admin.controller.js";
+const router = Router();
+router.use(authenticate, requireAdmin);
+router.get("/overview", getAdminOverview);
+router.get("/users", listUsers);
+router.patch("/users/:id/status", updateUserStatus);
+router.get("/audit-logs", listAuditLogs);
+export default router;
