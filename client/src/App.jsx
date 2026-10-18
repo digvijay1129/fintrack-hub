@@ -1,6 +1,6 @@
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import {
-  FiActivity, FiArrowUpRight, FiBell, FiCalendar, FiCreditCard, FiGrid,
+  FiActivity, FiArrowUpRight, FiCalendar, FiCreditCard, FiGrid,
   FiHelpCircle, FiPieChart, FiSettings, FiUsers, FiLogOut
 } from "react-icons/fi";
 import { useAuth } from "./context/AuthContext.jsx";
