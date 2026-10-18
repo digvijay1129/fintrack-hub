@@ -1,0 +1,10 @@
+import { Router } from "express";
+import { authenticate } from "../middleware/authenticate.js";
+import { createBudget, deleteBudget, listBudgets, updateBudget } from "../controllers/budgets.controller.js";
+const router = Router();
+router.use(authenticate);
+router.get("/", listBudgets);
+router.post("/", createBudget);
+router.patch("/:id", updateBudget);
+router.delete("/:id", deleteBudget);
+export default router;

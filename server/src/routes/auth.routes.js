@@ -1,0 +1,11 @@
+import { Router } from "express";
+import { authenticate } from "../middleware/authenticate.js";
+import { register, login, logout, me, updateProfile, changePassword } from "../controllers/auth.controller.js";
+const router = Router();
+router.post("/register", register);
+router.post("/login", login);
+router.post("/logout", logout);
+router.get("/me", authenticate, me);
+router.patch("/me", authenticate, updateProfile);
+router.post("/change-password", authenticate, changePassword);
+export default router;
