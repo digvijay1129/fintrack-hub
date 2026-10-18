@@ -1,7 +1,7 @@
 import { NavLink, Route, Routes } from "react-router-dom";
 import {
   FiActivity, FiArrowUpRight, FiBell, FiCalendar, FiChevronDown,
-  FiCreditCard, FiGrid, FiHelpCircle, FiPieChart, FiSettings, FiUsers, FiWallet
+  FiCreditCard, FiGrid, FiHelpCircle, FiPieChart, FiSettings, FiUsers
 } from "react-icons/fi";
 import ConnectionStatus from "./components/ConnectionStatus.jsx";
 
@@ -27,7 +27,7 @@ function PlaceholderPage({ page }) {
   return (
     <section className="page-card placeholder-page">
       <span className="eyebrow">ROADMAP · {phase}</span>
-      <div className="placeholder-icon"><FiWallet aria-hidden="true" /></div>
+      <div className="placeholder-icon"><FiCreditCard aria-hidden="true" /></div>
       <h2>{title}</h2>
       <p>{description}</p>
       <div className="roadmap-note"><span className="roadmap-dot" /> Foundation first, features built and tested in dependency order.</div>
@@ -50,7 +50,7 @@ function Overview() {
         <div className="welcome-mark" aria-hidden="true">
           <div className="mark-ring mark-ring--outer" />
           <div className="mark-ring mark-ring--inner" />
-          <div className="mark-center"><FiWallet /></div>
+          <div className="mark-center"><FiCreditCard /></div>
           <span className="mark-spark mark-spark--one" />
           <span className="mark-spark mark-spark--two" />
         </div>
@@ -92,7 +92,7 @@ function App() {
     <div className="app-frame">
       <aside className="sidebar">
         <a className="brand" href="/" aria-label="FinTrack Hub home">
-          <span className="brand-icon"><FiWallet aria-hidden="true" /></span>
+          <span className="brand-icon"><FiCreditCard aria-hidden="true" /></span>
           <span className="brand-copy"><strong>fintrack<span>hub</span></strong><small>PERSONAL FINANCE</small></span>
         </a>
         <div className="sidebar-label">WORKSPACE</div>
